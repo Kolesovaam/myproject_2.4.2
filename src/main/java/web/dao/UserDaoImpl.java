@@ -1,40 +1,56 @@
 package web.dao;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 
-@Repository
+@Transactional
+@Repository("userDao")
 public class UserDaoImpl implements UserDao {
+
     @PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager em;
 
     @Override
-    @SuppressWarnings("unchecked")
-    public List<User> findAll() {
-        return entityManager.createQuery("select c from User c", User.class).getResultList();
+    public void setUser(User user) {
+        em.persist(user);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<User> getUser(long id) {
+        TypedQuery<User> query = em.createQuery("select u from User u where u.id = :id", User.class);
+        query.setParameter("id", id);
+        return query.getResultList().stream().findFirst();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<User> getUserByLogin(String login) {
+        TypedQuery<User> query = em.createQuery("select u from User u where u.login = :login", User.class);
+        query.setParameter("login", login);
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
-    public User findById(Long id) {
-        return entityManager.find(User.class, id);
+    public void updateUser(User user) {
+        em.merge(user);
     }
 
     @Override
-    public void add(User user) {
-        entityManager.persist(user);
+    public void deleteUser(long id) {
+        em.remove(getUser(id).orElse(null));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public void delete(User user) {
-        entityManager.remove(findById(user.getId()));
-    }
-
-    @Override
-    public void edit(User user) {
-        entityManager.merge(user);
+    public List<User> getAllUsers() {
+        return em.createQuery("select u from User u", User.class).getResultList();
     }
 }

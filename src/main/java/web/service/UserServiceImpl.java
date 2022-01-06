@@ -4,46 +4,58 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.UserDao;
+import web.model.Role;
 import web.model.User;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Service
-@Transactional
+@Service("userService")
 public class UserServiceImpl implements UserService{
-    private UserDao userDao;
+
+    private final UserDao userDao;
+    private final Set<Role> allRoles;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, Set<Role> allRoles) {
         this.userDao = userDao;
+        this.allRoles = allRoles;
     }
 
     @Override
-    @Transactional
-    public List<User> findAll() {
-        return userDao.findAll();
+    public void setUser(User user) {
+        Set<Role> temp = new HashSet<>();
+        if (user.getRoles().isEmpty()) {
+            user.addRole(new Role("USER"));
+        }
+        allRoles.stream().filter(role -> user.getRoles().contains(new Role(role.getName()))).forEach(temp::add);
+        user.setRoles(temp);
+        userDao.setUser(user);
     }
 
     @Override
-    @Transactional
-    public User findById(Long id) {
-        return userDao.findById(id);
+    public User getUser(long id) {
+        return userDao.getUser(id).orElse(null);
     }
 
     @Override
-    @Transactional
-    public void add(User user) {
-        userDao.add(user);
+    public void updateUser(User user) {
+        userDao.updateUser(user);
     }
 
     @Override
-    @Transactional
-    public void delete(User user) {
-        userDao.delete(user);
+    public void deleteUser(long id) {
+        userDao.deleteUser(id);
     }
 
     @Override
-    public void edit(User user) {
-        userDao.edit(user);
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        return userDao.getUserByLogin(login).orElse(null);
     }
 }

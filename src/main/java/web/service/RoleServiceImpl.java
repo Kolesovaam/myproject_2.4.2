@@ -36,6 +36,8 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public void updateUser(User user) {
-
+        Set<Role> temp = new HashSet<>();
+        user.getRoles().forEach(role -> temp.add(getRoleByName(role.getName())));
+        user.setRoles(temp);
     }
 }

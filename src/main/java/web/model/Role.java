@@ -9,11 +9,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String name;
 
@@ -22,7 +20,10 @@ public class Role implements GrantedAuthority {
         this.name = name;
     }
 
-    public Role() {
+    public Role() {}
+
+    public Role(String role) {
+        this.name = role;
     }
 
     public Long getId() {
