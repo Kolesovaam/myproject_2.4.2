@@ -30,12 +30,12 @@ public class UserController {
     public String findAll(Model model) {
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
-        return "user-list";
+        return "/users/list";
     }
 
     @GetMapping("/user-create")
     public String createUserForm(User user) {
-        return "user-create";
+        return "/users/create";
     }
 
     @PostMapping("/user-create")
@@ -53,9 +53,9 @@ public class UserController {
 
     @GetMapping("/user-update/{id}")
     public String updateUserForm(@PathVariable("id") Long id, Model model) {
-        User user =userService.findById(id);
+        User user = userService.findById(id);
         model.addAttribute("user", user);
-        return "user-update";
+        return "users/update";
     }
 
     @PostMapping("/user-update")
