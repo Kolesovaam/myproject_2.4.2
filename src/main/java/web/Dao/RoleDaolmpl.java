@@ -1,4 +1,4 @@
-package web.dao;
+package web.Dao;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,28 +12,25 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Repository("roleDao")
-public class RoleDaoImpl implements RoleDao {
+public class RoleDaolmpl implements RoleDao{
 
     @PersistenceContext
-    private EntityManager entityManager;
-
+    private EntityManager em;
     @Override
     public void setRole(Role role) {
-        entityManager.persist(role);
+        em.persist(role);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Set<Role> getAllRoles() {
-        return entityManager.createQuery("select r from Role r", Role.class).getResultStream().collect(Collectors.toSet());
+        return em.createQuery("select r from Role r", Role.class).getResultStream().collect(Collectors.toSet());
     }
 
     @Override
     public Role getRoleByName(String name) {
-        TypedQuery<Role> query = entityManager.createQuery("select r from Role r where r.name = :name", Role.class);
+        TypedQuery<Role> query = em.createQuery("select r from Role r where r.name = :name", Role.class);
         query.setParameter("name", name);
         return query.getSingleResult();
     }
-
-
 }

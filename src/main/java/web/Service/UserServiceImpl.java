@@ -1,18 +1,18 @@
-package web.service;
+package web.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import web.dao.UserDao;
+import web.Dao.UserDao;
 import web.model.Role;
 import web.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 @Service("userService")
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final Set<Role> allRoles;
@@ -58,4 +58,6 @@ public class UserServiceImpl implements UserService{
     public User getUserByLogin(String login) {
         return userDao.getUserByLogin(login).orElse(null);
     }
+
+
 }

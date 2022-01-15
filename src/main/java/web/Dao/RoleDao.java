@@ -1,4 +1,4 @@
-package web.dao;
+package web.Dao;
 
 import web.model.Role;
 

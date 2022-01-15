@@ -13,16 +13,13 @@ import java.util.Set;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private long id;
     @Column(nullable = false, unique = true)
     private String login;
     private String password;
     private String name;
-
-    @Column(name = "surname")
-    private String surname;
-
+    @Column(name = "last_name")
+    private String lastName;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "Users_roles",
@@ -30,9 +27,6 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn (name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-
-    public User() {
-    }
 
     public String getLogin() {
         return login;
@@ -46,18 +40,25 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public User(String login, String password, String name, String surname) {
+    public User() {}
+
+    public User(String login, String password, String name, String lastName) {
         this.login = login;
         this.password = password;
         this.name = name;
-        this.surname = surname;
+        this.lastName = lastName;
+
     }
 
-    public Long getId() {
+    public void setRoles(Role role) {
+        roles.add(role);
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -69,12 +70,12 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Set<Role> getRoles() {
@@ -96,10 +97,8 @@ public class User implements UserDetails {
                 .append(". ")
                 .append(name)
                 .append(" ")
-                .append(surname).toString();
+                .append(lastName).toString();
     }
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

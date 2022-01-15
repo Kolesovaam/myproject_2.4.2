@@ -1,6 +1,9 @@
 package web.config;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -16,21 +19,22 @@ import java.util.Objects;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:db.properties")
-@ComponentScan(value = "web",excludeFilters = {@ ComponentScan.Filter (Controller.class)})
-public class HibernateConfig {
+@ComponentScan(value = "web", excludeFilters = {@ComponentScan.Filter(Controller.class)})
+public class RootConfig extends WebMvcConfigurationSupport {
+    private final Environment env;
 
-    private final Environment environment;
-
-    public HibernateConfig(Environment env) {
-        this.environment = env;
+    public RootConfig(Environment env) {
+        this.env = env;
     }
+
+
     @Bean
     DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("db.driver")));
-        dataSource.setUrl(environment.getProperty("db.url"));
-        dataSource.setUsername(environment.getProperty("db.username"));
-        dataSource.setPassword(environment.getProperty("db.password"));
+        dataSource.setDriverClassName(Objects.requireNonNull(env.getProperty("db.driver")));
+        dataSource.setUrl(env.getProperty("db.url"));
+        dataSource.setUsername(env.getProperty("db.username"));
+        dataSource.setPassword(env.getProperty("db.password"));
         return dataSource;
     }
 

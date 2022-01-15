@@ -1,66 +1,86 @@
 package web.controller;
 
+import web.Service.RoleService;
+import web.Service.UserService;
+import web.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import web.model.User;
-import web.service.UserService;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.annotation.security.RolesAllowed;
+import java.security.Principal;
+
 
 @Controller
+@RequestMapping("/")
 public class UserController {
-
-    private UserService userService;
+    private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
+    @RequestMapping(value = "login", method = RequestMethod.GET)
+    public String loginPage() {
+        return "login";
     }
 
-    @GetMapping("/users")
-    public String findAll(Model model) {
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
-        return "/users/list";
+    @GetMapping(value = "/")
+    public String startPage() {
+        return "login";
     }
 
-    @GetMapping("/user-create")
-    public String createUserForm(User user) {
-        return "/users/create";
+    @GetMapping("/admin")
+    public String listUsers(ModelMap model) {
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("roles", roleService.getAllRoles());
+        return "admin";
     }
 
-    @PostMapping("/user-create")
-    public String createUser(User user) {
-        userService.add(user);
-        return "redirect:/users";
+    @GetMapping("/updateUser")
+    public String updateUserForm(@RequestParam(value = "id") long id, ModelMap model) {
+        model.addAttribute("user", userService.getUser(id));
+        model.addAttribute("allRoles", roleService.getAllRoles());
+        return "updateUser";
     }
 
-    @GetMapping("user-delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id){
-        User user = userService.findById(id);
-        userService.delete(user);
-        return "redirect:/users";
-    }
-
-    @GetMapping("/user-update/{id}")
-    public String updateUserForm(@PathVariable("id") Long id, Model model) {
-        User user = userService.findById(id);
-        model.addAttribute("user", user);
-        return "users/update";
-    }
-
-    @PostMapping("/user-update")
+    @PostMapping("/updateUser")
     public String updateUser(User user) {
-        userService.edit(user);
-        return "redirect:/users";
+        roleService.updateUser(user);
+        userService.updateUser(user);
+        return "redirect:/admin";
     }
+
+    @GetMapping("/deleteUser")
+    public String deleteUser(@RequestParam long id) {
+        userService.deleteUser(id);
+        return "redirect:/admin";
+    }
+
+    @RolesAllowed(value = "ADMIN")
+    @GetMapping("/addUser")
+    public String addUserForm(@ModelAttribute User user, ModelMap model) {
+        model.addAttribute("allRoles", roleService.getAllRoles());
+        return "addUser";
+    }
+
+    @RolesAllowed(value = "ADMIN")
+    @PostMapping("/addUser")
+    public String addUser(User user) {
+        userService.setUser(user);
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/user")
+    public String showUser(Principal user, ModelMap modelMap) {
+        User userBd = userService.getUserByLogin(user.getName());
+        modelMap.addAttribute("user", userBd);
+        return "/user";
+    }
+
 }
+

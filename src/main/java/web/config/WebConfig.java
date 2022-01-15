@@ -1,8 +1,6 @@
 package web.config;
 
-
-
-import web.service.RoleService;
+import web.Service.RoleService;
 import web.model.Role;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -15,19 +13,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+import web.Service.RoleService;
 
 import java.util.Set;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(value = "web", basePackageClasses = HibernateConfig.class, useDefaultFilters = false,
-        includeFilters = {@ ComponentScan.Filter (Controller.class)})
+@ComponentScan(value = "web", basePackageClasses = RootConfig.class,
+        useDefaultFilters = false, includeFilters = {@ComponentScan.Filter(Controller.class)})
 public class WebConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
     private final RoleService roleService;
 
-    public WebConfig( ApplicationContext applicationContext, RoleService roleService) {
+    public WebConfig(ApplicationContext applicationContext, RoleService roleService) {
         this.applicationContext = applicationContext;
         this.roleService = roleService;
     }
@@ -44,7 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 
     @Bean
-    public SpringResourceTemplateResolver templateResolver(){
+    public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         resolver.setApplicationContext(applicationContext);
         resolver.setPrefix("/WEB-INF/view/");
@@ -69,4 +68,3 @@ public class WebConfig implements WebMvcConfigurer {
         registry.viewResolver(resolver);
     }
 }
-

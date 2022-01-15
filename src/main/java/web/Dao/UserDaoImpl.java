@@ -1,8 +1,8 @@
-package web.dao;
+package web.Dao;
 
+import web.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,4 +53,8 @@ public class UserDaoImpl implements UserDao {
     public List<User> getAllUsers() {
         return em.createQuery("select u from User u", User.class).getResultList();
     }
+
+
+
+
 }
